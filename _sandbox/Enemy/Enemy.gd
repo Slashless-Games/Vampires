@@ -14,6 +14,7 @@ var consumption = int(max_hits_consumption);
 onready var player = get_tree().get_nodes_in_group("Player")[0];
 onready var animationPlayer := $Animation;
 onready var consumptionOrb := $ConsumptionOrb;
+onready var deathTimer := $DeathTimer;
 onready var mesh := $Mesh;
 onready var playerDir;
 
@@ -29,9 +30,13 @@ var is_dead = false;
 func _ready():
 	get_node("Attack").connect("body_entered", self, "_attachAttack")
 	get_node("Attack").connect("body_exited", self, "_detachAttack")
+	$DeathTimer.connect("timeout", self, "_remove");
 	EventBus.connect("player_attacks", self, "_attacked");
 
 func _process(delta):
+	if(!is_instance_valid(self)):
+		return;
+		
 	if player != null && is_instance_valid(player):
 		var playerOrigin = player.transform.origin 
 		playerDir = (playerOrigin - transform.origin).normalized()
@@ -42,7 +47,6 @@ func _process(delta):
 		if chasing_player:
 			look_at(playerOrigin, Vector3.UP);
 			move_and_slide(playerDir * speed, Vector3.UP);
-		if(is_instance_valid(self) && !is_dead):
 			attack();
 
 func _attacked(target):
@@ -53,13 +57,18 @@ func _attacked(target):
 		animationPlayer.play("TakeDamage");
 		animationPlayer.queue("RESET");
 		move_and_slide(-playerDir * jump, Vector3.UP);
-	damage();
+	
+	if is_instance_valid(self):
+		damage();
 
 func _input(_event):
 	if Input.is_key_pressed(KEY_ENTER):
 		current_health = 0;
 
 func damage(amount = 1):
+	if !is_instance_valid(self):
+		return;
+	
 	if current_health > 0:
 		current_health -= amount;
 	EventBus.emit_signal("enemy_hit");
@@ -69,13 +78,14 @@ func damage(amount = 1):
 			mesh.visible = false;
 			consumptionOrb.visible = true;
 		consumption -= 1;
+		deathTimer.start();
 		if consumption <= 0:
 			EventBus.emit_signal("enemy_consumed", 1);
-			queue_free();
-		
-		yield(get_tree().create_timer(2), "timeout")
-		queue_free();
-		
+			_remove();
+
+func _remove():
+	queue_free();
+	
 func _attachAttack(body):
 	if body is Player:
 		attacking = body;
