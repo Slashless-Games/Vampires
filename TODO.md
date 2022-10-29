@@ -1,4 +1,9 @@
-### TODO: 
+## TODO: 
+- [ ] Camera on FollowPath test
+- [ ] Draw map out of "Play Area"
+- [ ] Greybox map area
+
+### DONE:
 - [x] Make health on enemies
 - [x] Make "consuming" mechanic
 - [x] Dash
@@ -6,11 +11,8 @@
 - [x] Block mechanism
 - [x] Health bar
 
-
-#### ... Ephermal Tasks:
+#### BACKLOG:
 - [ ] Items research + "Fountain" placeholder
-- [ ] Draw map out of "Play Area"
-- [ ] Greybox map area
 - [ ] Basic Fountain integration (skilltree / powerup)...
 - [ ] Work on the UI implementation + UI dressing in general
 - [ ] List of third-party assets to consume...
