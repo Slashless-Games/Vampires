@@ -1,0 +1,55 @@
+[gd_scene load_steps=8 format=2]
+
+[ext_resource path="res://player/Player.gd" type="Script" id=1]
+[ext_resource path="res://player/Attack.gd" type="Script" id=2]
+
+[sub_resource type="CapsuleMesh" id=1]
+radius = 0.4
+
+[sub_resource type="SpatialMaterial" id=4]
+albedo_color = Color( 1, 0, 0, 1 )
+
+[sub_resource type="CubeMesh" id=2]
+size = Vector3( 0.25, 0.5, 0.25 )
+
+[sub_resource type="CapsuleShape" id=3]
+radius = 0.387836
+
+[sub_resource type="CylinderShape" id=5]
+radius = 0.65
+
+[node name="Player" type="KinematicBody" groups=["Player"]]
+script = ExtResource( 1 )
+
+[node name="Mesh" type="Spatial" parent="."]
+transform = Transform( -4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 0, 0, 0 )
+
+[node name="MeshInstance" type="MeshInstance" parent="Mesh"]
+transform = Transform( 1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0.919878, 0 )
+mesh = SubResource( 1 )
+skeleton = NodePath("../..")
+material/0 = SubResource( 4 )
+
+[node name="MeshInstance" type="MeshInstance" parent="Mesh/MeshInstance"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0.432142, -1.87397e-08, -0.428715 )
+mesh = SubResource( 2 )
+
+[node name="MainCollision" type="CollisionShape" parent="."]
+unique_name_in_owner = true
+transform = Transform( 1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0.886339, 0 )
+shape = SubResource( 3 )
+
+[node name="Attack" type="Area" parent="."]
+script = ExtResource( 2 )
+
+[node name="AttackCollider" type="CollisionShape" parent="Attack"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.21842, -1.21377 )
+shape = SubResource( 5 )
+
+[node name="HealthBar" type="ProgressBar" parent="."]
+unique_name_in_owner = true
+margin_left = 80.0
+margin_top = 40.0
+margin_right = 480.0
+margin_bottom = 54.0
+value = 100.0
