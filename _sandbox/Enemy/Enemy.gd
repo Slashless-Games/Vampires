@@ -27,6 +27,7 @@ var waitForNextAttack = false;
 func _ready():
 	get_node("Attack").connect("body_entered", self, "_attachAttack")
 	get_node("Attack").connect("body_exited", self, "_detachAttack")
+	EventBus.connect("player_attacks", self, "_take_damage");
 	pass # Replace with function body.
 
 func _process(delta):
@@ -39,7 +40,7 @@ func _process(delta):
 			attack();
 
 func _take_damage(attacked):
-	if self.name == attacked.name:
+	if self == attacked:
 		animationPlayer.play("TakeDamage");
 		animationPlayer.queue("RESET");
 		move_and_slide(-playerDir * jump, Vector3.UP);
@@ -58,11 +59,8 @@ func _detachAttack(body):
 		attacking = null;
 
 func attack():
-	if is_instance_valid(attacking) && attacking && attacking.has_method("take_damage") && !waitForNextAttack:
-		is_attacking = true;
-		if !attacking.is_blocking:
-			attacking.take_damage();
+	if is_instance_valid(attacking) && !waitForNextAttack:
+		EventBus.emit_signal("player_hit"); # We rewrote this to make it simpler
 		waitForNextAttack = true;
 		yield(get_tree().create_timer(1.25), "timeout")
 		waitForNextAttack = false;
-		is_attacking = false;

@@ -9,7 +9,7 @@ export var max_health = 8;
 var current_health = int(max_health);
 
 export var speed = 5.0;
-export var is_blocking = false;
+export var is_attacking = false;
 
 var horizontal = 0;
 var vertical = 0;
@@ -23,6 +23,8 @@ func _ready():
 	healthbar.rect_size = Vector2((max_health / 2) * 100, 20);
 	healthbar.min_value = 0;
 	healthbar.max_value = max_health;
+	EventBus.connect("player_hit", self, "take_damage");
+	EventBus.connect("player_attacks", self, "set_is_attacking");
 	
 func _input(_event):
 	horizontal = Input.get_action_strength("left") - Input.get_action_strength("right");
@@ -49,11 +51,18 @@ func _process(delta):
 	move_and_slide(vel * currSpeed, Vector3.UP);
 
 func take_damage():
-	if !is_blocking:
-		current_health -= 1;
-		healthbar.value = current_health;
-		if current_health == 0:
-			queue_free()
+	if is_attacking:
+		return
+	current_health -= 1;
+	healthbar.value = current_health;
+	
+	if current_health <= 0:
+		queue_free()
+	
+func set_is_attacking(target):
+	is_attacking = true;
+	yield(get_tree().create_timer(0.2), "timeout")
+	is_attacking = false;
 
 func health_updated():
 	pass;
