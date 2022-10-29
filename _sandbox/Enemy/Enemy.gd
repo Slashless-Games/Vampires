@@ -1,23 +1,25 @@
 extends KinematicBody
 class_name Enemy
 
-
+export var chasing_player = true;
 export var speed = 1;
 export var jump = 40;
 
-export var max_health := 4;
-export var is_attacking = false;
+export var max_health := 12;
 var current_health = int(max_health);
 
-
+export var max_hits_consumption := 3;
+var consumption = int(max_hits_consumption);
+ 
 onready var player = get_tree().get_nodes_in_group("Player")[0];
 onready var animationPlayer := $Animation;
+onready var consumptionOrb := $ConsumptionOrb;
+onready var mesh := $Mesh;
 onready var playerDir;
 
 var attacking;
 var waitForNextAttack = false;
-
-
+var is_dead = false;
 
 # Declare member variables here. Examples:
 # var a = 2
@@ -27,29 +29,53 @@ var waitForNextAttack = false;
 func _ready():
 	get_node("Attack").connect("body_entered", self, "_attachAttack")
 	get_node("Attack").connect("body_exited", self, "_detachAttack")
-	EventBus.connect("player_attacks", self, "_take_damage");
-	pass # Replace with function body.
+	EventBus.connect("player_attacks", self, "_attacked");
 
 func _process(delta):
 	if player != null && is_instance_valid(player):
 		var playerOrigin = player.transform.origin 
 		playerDir = (playerOrigin - transform.origin).normalized()
-		look_at(playerOrigin, Vector3.UP);
-		move_and_slide(playerDir * speed, Vector3.UP);
-		if(is_instance_valid(self)):
+		
+		if is_dead:
+			chasing_player = false;
+		
+		if chasing_player:
+			look_at(playerOrigin, Vector3.UP);
+			move_and_slide(playerDir * speed, Vector3.UP);
+		if(is_instance_valid(self) && !is_dead):
 			attack();
 
-func _take_damage(attacked):
-	if self == attacked:
+func _attacked(target):
+	if self.get_instance_id() != target.get_instance_id():
+		return;
+	
+	if(!is_dead):
 		animationPlayer.play("TakeDamage");
 		animationPlayer.queue("RESET");
 		move_and_slide(-playerDir * jump, Vector3.UP);
-		current_health -= 1; # TODO: Could also be affected by "attached weapon"
-		EventBus.emit_signal("enemy_hit");
-		if(current_health == 0):
-			queue_free() #TODO: Play death animation first...
-		
+	damage();
 
+func _input(_event):
+	if Input.is_key_pressed(KEY_ENTER):
+		current_health = 0;
+
+func damage(amount = 1):
+	if current_health > 0:
+		current_health -= amount;
+	EventBus.emit_signal("enemy_hit");
+	if current_health == 0:
+		if(!is_dead):
+			is_dead = true;
+			mesh.visible = false;
+			consumptionOrb.visible = true;
+		consumption -= 1;
+		if consumption <= 0:
+			EventBus.emit_signal("enemy_consumed", 1);
+			queue_free();
+		
+		yield(get_tree().create_timer(2), "timeout")
+		queue_free();
+		
 func _attachAttack(body):
 	if body is Player:
 		attacking = body;

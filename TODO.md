@@ -1,6 +1,6 @@
 ### TODO: 
 - [x] Make health on enemies
-- [ ] Make "consuming" mechanic
+- [x] Make "consuming" mechanic
 - [x] Dash
 - [x] "EventBus" basic implementation
 - [x] Block mechanism

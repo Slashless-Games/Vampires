@@ -9,7 +9,7 @@ export var max_health = 8;
 var current_health = int(max_health);
 
 export var speed = 5.0;
-export var is_attacking = false;
+var is_attacking = false;
 
 var horizontal = 0;
 var vertical = 0;
@@ -25,6 +25,7 @@ func _ready():
 	healthbar.max_value = max_health;
 	EventBus.connect("player_hit", self, "take_damage");
 	EventBus.connect("player_attacks", self, "set_is_attacking");
+	EventBus.connect("enemy_consumed", self, "add_health");
 	
 func _input(_event):
 	horizontal = Input.get_action_strength("left") - Input.get_action_strength("right");
@@ -64,6 +65,8 @@ func set_is_attacking(target):
 	yield(get_tree().create_timer(0.2), "timeout")
 	is_attacking = false;
 
-func health_updated():
-	pass;
-
+func add_health(amount = 1):
+	if (current_health + amount) < max_health:
+		current_health += amount;
+		healthbar.value = current_health;
+		yield(get_tree().create_timer(0.2), "timeout")
