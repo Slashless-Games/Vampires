@@ -98,5 +98,8 @@ func attack():
 	if is_instance_valid(attacking) && !waitForNextAttack:
 		EventBus.emit_signal("player_hit"); # We rewrote this to make it simpler
 		waitForNextAttack = true;
+		
 		yield(get_tree().create_timer(1.25), "timeout")
+		if !is_instance_valid(self):
+			return;
 		waitForNextAttack = false;
