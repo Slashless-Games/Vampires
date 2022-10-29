@@ -1,5 +1,5 @@
 ## TODO: 
-- [ ] Camera on FollowPath test
+- [x] Camera on FollowPath test
 - [ ] Draw map out of "Play Area"
 - [ ] Greybox map area
 
@@ -16,6 +16,6 @@
 - [ ] Basic Fountain integration (skilltree / powerup)...
 - [ ] Work on the UI implementation + UI dressing in general
 - [ ] List of third-party assets to consume...
-- [ ] Art for the Skybox + "General mood"i
+- [ ] Art for the Skybox + "General mood"
 - [ ] Block base for the main character
 - [ ] 

@@ -1,0 +1,69 @@
+[gd_scene load_steps=7 format=2]
+
+[ext_resource path="res://player/Player.tscn" type="PackedScene" id=1]
+[ext_resource path="res://_sandbox/EndGoal.gd" type="Script" id=2]
+[ext_resource path="res://_sandbox/CameraControlPath.gd" type="Script" id=3]
+[ext_resource path="res://_sandbox/Enemy/Enemy.tscn" type="PackedScene" id=4]
+
+[sub_resource type="Curve3D" id=1]
+_data = {
+"points": PoolVector3Array( 0, 0, 0, 0, 0, 0, 3.57336, 0, -4.65184, 0, 0, 0, 0, 0, 0, 8.26687, 0, -8.98978, 0, 0, 0, 0, 0, 0, 8.01797, 0, -14.6789, 0, 0, 0, 0, 0, 0, 4.85341, 0, -17.2034, 0, 0, 0, 0, 0, 0, -1.04902, 0, -17.6656, 0, 0, 0, 0, 0, 0, -3.64467, 0, -19.3724, 0, 0, 0, 0, 0, 0, -4.6047, 0, -25.097 ),
+"tilts": PoolRealArray( 0, 0, 0, 0, 0, 0, 0 )
+}
+
+[sub_resource type="BoxShape" id=2]
+
+[node name="TestCameraLevel" type="Spatial"]
+
+[node name="Enemy" parent="." instance=ExtResource( 4 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -8.83307, 1.02475, -18.4798 )
+
+[node name="Player" parent="." instance=ExtResource( 1 )]
+
+[node name="CSGCombiner" type="CSGCombiner" parent="."]
+use_collision = true
+
+[node name="CSGBox" type="CSGBox" parent="CSGCombiner"]
+width = 4.35314
+height = 0.228234
+depth = 6.79434
+
+[node name="CSGPolygon" type="CSGPolygon" parent="CSGCombiner"]
+transform = Transform( -0.00781902, 0, 0.999969, 0, 1, 0, -0.999969, 0, -0.00781902, 1.94328, 0.110118, -3.32903 )
+polygon = PoolVector2Array( 0, 0, 1.84537, 1.28478, 1.84369, 0.437129, 1, 0 )
+
+[node name="CSGBox2" type="CSGBox" parent="CSGCombiner"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 1.44015, 0.803815, -9.20355 )
+width = 5.20082
+height = 0.727244
+depth = 8.01126
+
+[node name="CSGBox3" type="CSGBox" parent="CSGCombiner"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -3.47607, 0.803815, -12.106 )
+width = 5.20082
+height = 0.727244
+depth = 2.12561
+
+[node name="CSGBox4" type="CSGBox" parent="CSGCombiner"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -8.6182, 0.803815, -15.7385 )
+width = 5.20082
+height = 0.727244
+depth = 13.399
+
+[node name="CameraPath" type="Path" parent="."]
+curve = SubResource( 1 )
+
+[node name="CameraJig" type="PathFollow" parent="CameraPath"]
+transform = Transform( -0.78576, 0, 0.618525, 0, 1, 0, -0.618526, 0, -0.785759, 3.57336, 0, -4.65184 )
+rotation_mode = 0
+script = ExtResource( 3 )
+
+[node name="Camera" type="Camera" parent="CameraPath/CameraJig"]
+transform = Transform( 1, 0, 0, 0, 0.829038, 0.559193, 0, -0.559193, 0.829038, 0, 4, 0 )
+
+[node name="Area" type="Area" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -8.63762, 2.01827, -21.5267 )
+script = ExtResource( 2 )
+
+[node name="CollisionShape" type="CollisionShape" parent="Area"]
+shape = SubResource( 2 )

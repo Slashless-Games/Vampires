@@ -27,7 +27,7 @@ _global_script_class_icons={
 [application]
 
 config/name="Vampires"
-run/main_scene="res://_sandbox/TestArea.tscn"
+run/main_scene="res://_sandbox/CameraTestArea.tscn"
 config/icon="res://icon.png"
 
 [autoload]
